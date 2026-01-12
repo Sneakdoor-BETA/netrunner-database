@@ -4,7 +4,7 @@ from pydantic import TypeAdapter
 from .base import OracleBase, ResultBase
 
 
-class OracleModel(OracleBase):
+class OraclePool(OracleBase):
     """英文「卡池」数据结构"""
 
     name: str
@@ -20,7 +20,7 @@ class OracleModel(OracleBase):
     """卡池包含卡包"""
 
 
-class ResultModel(ResultBase):
+class ResultPool(ResultBase):
     """最终「卡池」数据结构"""
 
     oracle_name: str
@@ -36,16 +36,16 @@ class ResultModel(ResultBase):
     """卡池包含循环"""
 
 
-oracle_validator = TypeAdapter(list[OracleModel])
-result_validator = TypeAdapter(list[ResultModel])
+oracle_validator = TypeAdapter(list[OraclePool])
+result_validator = TypeAdapter(list[ResultPool])
 
 
 ORACLE_FILE = "source/enUS/v2/card_pools"
 RESULT_FILE = "result/pools.json"
 
 
-def load_oracle() -> list[OracleModel]:
-    result: list[OracleModel] = list()
+def load_oracle() -> list[OraclePool]:
+    result: list[OraclePool] = list()
     filenames = sorted(os.listdir(ORACLE_FILE))
     for filename in filenames:
         fullname = os.path.join(ORACLE_FILE, filename)
@@ -57,11 +57,11 @@ def load_oracle() -> list[OracleModel]:
     return result
 
 
-def load_result() -> list[ResultModel]:
+def load_result() -> list[ResultPool]:
     oracles = load_oracle()
-    results: list[ResultModel] = list()
+    results: list[ResultPool] = list()
     for oracle in oracles:
-        result = ResultModel(
+        result = ResultPool(
             codename=oracle.id,
             oracle_name=oracle.name,
             format_codename=oracle.format_id,

@@ -12,7 +12,7 @@ class OracleBannedSubtype(BaseModel):
     banned: list[str] = list()
 
 
-class OracleModel(OracleBase):
+class OracleRestriction(OracleBase):
     """英文「禁限表」数据结构"""
 
     name: str
@@ -46,7 +46,7 @@ class OracleModel(OracleBase):
     """（暂不使用）"""
 
 
-class ResultModel(ResultBase):
+class ResultRestriction(ResultBase):
     """最终「禁限表」数据结构"""
 
     codename: str
@@ -68,15 +68,15 @@ class ResultModel(ResultBase):
     """禁限表禁止子类型"""
 
 
-result_validator = TypeAdapter(list[ResultModel])
+result_validator = TypeAdapter(list[ResultRestriction])
 
 
 ORACLE_FILE = "source/enUS/v2/restrictions"
 RESULT_FILE = "result/restrictions.json"
 
 
-def load_oracle() -> list[OracleModel]:
-    result: list[OracleModel] = list()
+def load_oracle() -> list[OracleRestriction]:
+    result: list[OracleRestriction] = list()
     subfolders = sorted(os.listdir(ORACLE_FILE))
     for folder in subfolders:
         location = os.path.join(ORACLE_FILE, folder)
@@ -85,17 +85,17 @@ def load_oracle() -> list[OracleModel]:
             fullname = os.path.join(location, filename)
             with open(fullname, "r", encoding="utf-8") as file:
                 text = file.read()
-                entries = OracleModel.model_validate_json(text, strict=True)
+                entries = OracleRestriction.model_validate_json(text, strict=True)
                 result.append(entries)
 
     return result
 
 
-def load_result() -> list[ResultModel]:
+def load_result() -> list[ResultRestriction]:
     oracles = load_oracle()
-    results: list[ResultModel] = list()
+    results: list[ResultRestriction] = list()
     for oracle in oracles:
-        result = ResultModel(
+        result = ResultRestriction(
             codename=oracle.id,
             oracle_name=oracle.name,
             format_codename=oracle.format_id,

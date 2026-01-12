@@ -17,7 +17,7 @@ class OraclePrintingFace(BaseModel):
     """不使用"""
 
 
-class OracleModel(OracleBase):
+class OraclePrinting(OracleBase):
     """英文「卡图」数据结构"""
 
     card_id: str
@@ -51,14 +51,14 @@ class OracleModel(OracleBase):
     """不使用"""
 
 
-class LocaleModel(LocaleBase):
+class LocalePrinting(LocaleBase):
     """中文「卡图」数据结构"""
 
     flavor: str
     """卡图风味文字"""
 
 
-class ResultModel(ResultBase):
+class ResultPrinting(ResultBase):
     """最终「卡图」数据结构"""
 
     card_codename: str
@@ -89,9 +89,9 @@ class ResultModel(ResultBase):
     """卡图发行组"""
 
 
-oracle_validator = TypeAdapter(list[OracleModel])
-locale_validator = TypeAdapter(list[LocaleModel])
-result_validator = TypeAdapter(list[ResultModel])
+oracle_validator = TypeAdapter(list[OraclePrinting])
+locale_validator = TypeAdapter(list[LocalePrinting])
+result_validator = TypeAdapter(list[ResultPrinting])
 
 
 ORACLE_FILE = "source/enUS/v2/printings"
@@ -99,8 +99,8 @@ LOCALE_FILE = "source/zhCN/data/json/printings.json"
 RESULT_FILE = "result/printings.json"
 
 
-def load_oracle() -> list[OracleModel]:
-    result: list[OracleModel] = list()
+def load_oracle() -> list[OraclePrinting]:
+    result: list[OraclePrinting] = list()
     filenames = sorted(os.listdir(ORACLE_FILE))
     for filename in filenames:
         fullname = os.path.join(ORACLE_FILE, filename)
@@ -112,21 +112,21 @@ def load_oracle() -> list[OracleModel]:
     return result
 
 
-def load_locale() -> dict[str, LocaleModel]:
+def load_locale() -> dict[str, LocalePrinting]:
     with open(LOCALE_FILE, "r", encoding="utf-8") as file:
         text = file.read()
         entries = locale_validator.validate_json(text, strict=True)
-        result: dict[str, LocaleModel] = dict()
+        result: dict[str, LocalePrinting] = dict()
         for e in entries:
             result[e.id] = e
 
         return result
 
 
-def load_result() -> list[ResultModel]:
+def load_result() -> list[ResultPrinting]:
     oracles = load_oracle()
     locales = load_locale()
-    results: list[ResultModel] = list()
+    results: list[ResultPrinting] = list()
     for oracle in oracles:
         locale = locales.get(oracle.id, None)
         if locale is None:
@@ -137,7 +137,7 @@ def load_result() -> list[ResultModel]:
             if len(face.flavor) > 0:
                 oracle_flavor = oracle_flavor + ("\n" if len(oracle_flavor) > 0 else "") + face.flavor
 
-        result = ResultModel(
+        result = ResultPrinting(
             codename=oracle.id,
             card_codename=oracle.card_id,
             set_codename=oracle.card_set_id,

@@ -3,7 +3,7 @@ from pydantic import TypeAdapter
 from .base import OracleBase, LocaleBase, ResultBase
 
 
-class OracleModel(OracleBase):
+class OracleSettype(OracleBase):
     """英文「卡包类型」数据结构"""
 
     name: str
@@ -13,7 +13,7 @@ class OracleModel(OracleBase):
     """卡包类型描述"""
 
 
-class LocaleModel(LocaleBase):
+class LocaleSettype(LocaleBase):
     """中文「卡包类型」数据结构"""
 
     name: str
@@ -23,7 +23,7 @@ class LocaleModel(LocaleBase):
     """卡包类型描述"""
 
 
-class ResultModel(ResultBase):
+class ResultSettype(ResultBase):
     """最终「卡包类型」数据结构"""
 
     oracle_name: str
@@ -39,9 +39,9 @@ class ResultModel(ResultBase):
     """卡包类型中文描述"""
 
 
-oracle_validator = TypeAdapter(list[OracleModel])
-locale_validator = TypeAdapter(list[LocaleModel])
-result_validator = TypeAdapter(list[ResultModel])
+oracle_validator = TypeAdapter(list[OracleSettype])
+locale_validator = TypeAdapter(list[LocaleSettype])
+result_validator = TypeAdapter(list[ResultSettype])
 
 
 ORACLE_FILE = "source/enUS/v2/card_set_types.json"
@@ -49,34 +49,34 @@ LOCALE_FILE = "source/zhCN/data/json/set_types.json"
 RESULT_FILE = "result/settypes.json"
 
 
-def load_oracle() -> list[OracleModel]:
+def load_oracle() -> list[OracleSettype]:
     with open(ORACLE_FILE, "r", encoding="utf-8") as file:
         text = file.read()
         entries = oracle_validator.validate_json(text, strict=True)
         return entries
 
 
-def load_locale() -> dict[str, LocaleModel]:
+def load_locale() -> dict[str, LocaleSettype]:
     with open(LOCALE_FILE, "r", encoding="utf-8") as file:
         text = file.read()
         entries = locale_validator.validate_json(text, strict=True)
-        result: dict[str, LocaleModel] = dict()
+        result: dict[str, LocaleSettype] = dict()
         for e in entries:
             result[e.id] = e
 
         return result
 
 
-def load_result() -> list[ResultModel]:
+def load_result() -> list[ResultSettype]:
     oracles = load_oracle()
     locales = load_locale()
-    results: list[ResultModel] = list()
+    results: list[ResultSettype] = list()
     for oracle in oracles:
         locale = locales.get(oracle.id, None)
         if locale is None:
             raise Exception(f"ID = {oracle.id}：缺少中文数据!")
 
-        result = ResultModel(
+        result = ResultSettype(
             codename=oracle.id,
             oracle_name=oracle.name,
             locale_name=locale.name,

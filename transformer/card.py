@@ -29,7 +29,7 @@ class OracleCardFace(BaseModel):
     """卡牌卡面中转"""
 
 
-class OracleModel(OracleBase):
+class OracleCard(OracleBase):
     """英文「卡牌」数据结构"""
 
     title: str
@@ -117,7 +117,7 @@ class OracleModel(OracleBase):
     """卡牌背景文字"""
 
 
-class LocaleModel(LocaleBase):
+class LocaleCard(LocaleBase):
     """中文「卡牌」数据结构"""
 
     name: str
@@ -127,7 +127,7 @@ class LocaleModel(LocaleBase):
     """卡牌文本"""
 
 
-class ResultModel(ResultBase):
+class ResultCard(ResultBase):
     """最终「卡牌」数据结构"""
 
     oracle_title: str
@@ -218,8 +218,8 @@ class ResultModel(ResultBase):
     """卡牌英文背景文字"""
 
 
-locale_validator = TypeAdapter(list[LocaleModel])
-result_validator = TypeAdapter(list[ResultModel])
+locale_validator = TypeAdapter(list[LocaleCard])
+result_validator = TypeAdapter(list[ResultCard])
 
 
 ORACLE_FILE = "source/enUS/v2/cards"
@@ -227,34 +227,34 @@ LOCALE_FILE = "source/zhCN/data/json/cards.json"
 RESULT_FILE = "result/cards.json"
 
 
-def load_oracle() -> list[OracleModel]:
-    result: list[OracleModel] = list()
+def load_oracle() -> list[OracleCard]:
+    result: list[OracleCard] = list()
     filenames = sorted(os.listdir(ORACLE_FILE))
     for filename in filenames:
         fullname = os.path.join(ORACLE_FILE, filename)
         with open(fullname, "r", encoding="utf-8") as file:
             text = file.read()
-            item = OracleModel.model_validate_json(text, strict=True)
+            item = OracleCard.model_validate_json(text, strict=True)
             result.append(item)
 
     return result
 
 
-def load_locale() -> dict[str, LocaleModel]:
+def load_locale() -> dict[str, LocaleCard]:
     with open(LOCALE_FILE, "r", encoding="utf-8") as file:
         text = file.read()
         entries = locale_validator.validate_json(text, strict=True)
-        result: dict[str, LocaleModel] = dict()
+        result: dict[str, LocaleCard] = dict()
         for e in entries:
             result[e.id] = e
 
         return result
 
 
-def load_result() -> list[ResultModel]:
+def load_result() -> list[ResultCard]:
     oracles = load_oracle()
     locales = load_locale()
-    results: list[ResultModel] = list()
+    results: list[ResultCard] = list()
     for oracle in oracles:
         locale = locales.get(oracle.id, None)
         if locale is None:
@@ -273,7 +273,7 @@ def load_result() -> list[ResultModel]:
                 oracle_text = oracle_text + f"\n{face_type}{face_title}\n{face_text}"
                 stripped_text = stripped_text + f"\n{face_stripped_type}{face_stripped_title}\n{face_stripped_text}"
 
-        result = ResultModel(
+        result = ResultCard(
             codename=oracle.id,
             oracle_title=oracle.title,
             locale_title=locale.name,

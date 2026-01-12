@@ -4,20 +4,10 @@ __description__ = "《矩阵潜袭》卡牌数据转换/处理/合并工具"
 
 
 __all__ = [
-    "save_side",
-    "save_faction",
-    "save_type",
-    "save_subtype",
-    "save_settype",
-    "save_cycle",
-    "save_set",
-    "save_format",
-    "save_snapshot",
-    "save_pool",
-    "save_restrictions",
-    "save_ruling",
-    "save_card",
-    "save_printing",
+    "save_side", "save_faction", "save_type", "save_subtype",
+    "save_settype", "save_cycle", "save_set",
+    "save_format", "save_snapshot", "save_pool", "save_restrictions",
+    "save_ruling", "save_card", "save_printing",
 ]
 
 
@@ -33,4 +23,4 @@ from .pool import save_pool
 from .restriction import save_restrictions
 from .ruling import save_ruling
 from .card import save_card
-from .printing import save_printing
+from .printing import save_printing, ResultPrinting

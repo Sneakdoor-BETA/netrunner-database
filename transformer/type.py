@@ -3,7 +3,7 @@ from pydantic import TypeAdapter
 from .base import OracleBase, LocaleBase, ResultBase
 
 
-class OracleModel(OracleBase):
+class OracleType(OracleBase):
     """英文「类型」数据结构"""
 
     name: str
@@ -13,14 +13,14 @@ class OracleModel(OracleBase):
     """类型所属阵营"""
 
 
-class LocaleModel(LocaleBase):
+class LocaleType(LocaleBase):
     """中文「类型」数据结构"""
 
     name: str
     """类型名称"""
 
 
-class ResultModel(ResultBase):
+class ResultType(ResultBase):
     """最终「类型」数据结构"""
 
     oracle_name: str
@@ -33,9 +33,9 @@ class ResultModel(ResultBase):
     """类型所属阵营"""
 
 
-oracle_validator = TypeAdapter(list[OracleModel])
-locale_validator = TypeAdapter(list[LocaleModel])
-result_validator = TypeAdapter(list[ResultModel])
+oracle_validator = TypeAdapter(list[OracleType])
+locale_validator = TypeAdapter(list[LocaleType])
+result_validator = TypeAdapter(list[ResultType])
 
 
 ORACLE_FILE = "source/enUS/v2/card_types.json"
@@ -43,34 +43,34 @@ LOCALE_FILE = "source/zhCN/data/json/types.json"
 RESULT_FILE = "result/types.json"
 
 
-def load_oracle() -> list[OracleModel]:
+def load_oracle() -> list[OracleType]:
     with open(ORACLE_FILE, "r", encoding="utf-8") as file:
         text = file.read()
         entries = oracle_validator.validate_json(text, strict=True)
         return entries
 
 
-def load_locale() -> dict[str, LocaleModel]:
+def load_locale() -> dict[str, LocaleType]:
     with open(LOCALE_FILE, "r", encoding="utf-8") as file:
         text = file.read()
         entries = locale_validator.validate_json(text, strict=True)
-        result: dict[str, LocaleModel] = dict()
+        result: dict[str, LocaleType] = dict()
         for e in entries:
             result[e.id] = e
 
         return result
 
 
-def load_result() -> list[ResultModel]:
+def load_result() -> list[ResultType]:
     oracles = load_oracle()
     locales = load_locale()
-    results: list[ResultModel] = list()
+    results: list[ResultType] = list()
     for oracle in oracles:
         locale = locales.get(oracle.id, None)
         if locale is None:
             raise Exception(f"ID = {oracle.id}：缺少中文数据!")
 
-        result = ResultModel(
+        result = ResultType(
             codename=oracle.id,
             oracle_name=oracle.name,
             locale_name=locale.name,

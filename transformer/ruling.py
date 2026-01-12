@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, TypeAdapter
 from .base import ResultBase
 
 
-class OracleModel(BaseModel):
+class OracleRuling(BaseModel):
     """英文「FAQ」数据结构"""
 
     model_config = ConfigDict(strict=True, frozen=True, extra="forbid")
@@ -28,7 +28,7 @@ class OracleModel(BaseModel):
     """FAQ是否官方认证"""
 
 
-class ResultModel(ResultBase):
+class ResultRuling(ResultBase):
     """最终「FAQ」数据结构"""
 
     question: str
@@ -50,16 +50,16 @@ class ResultModel(ResultBase):
     """FAQ是否官方认证"""
 
 
-oracle_validator = TypeAdapter(list[OracleModel])
-result_validator = TypeAdapter(list[ResultModel])
+oracle_validator = TypeAdapter(list[OracleRuling])
+result_validator = TypeAdapter(list[ResultRuling])
 
 
 ORACLE_FILE = "source/enUS/v2/rulings"
 RESULT_FILE = "result/rulings.json"
 
 
-def load_oracle() -> list[OracleModel]:
-    result: list[OracleModel] = list()
+def load_oracle() -> list[OracleRuling]:
+    result: list[OracleRuling] = list()
     filenames = sorted(os.listdir(ORACLE_FILE))
     for filename in filenames:
         fullname = os.path.join(ORACLE_FILE, filename)
@@ -71,11 +71,11 @@ def load_oracle() -> list[OracleModel]:
     return result
 
 
-def load_result() -> list[ResultModel]:
+def load_result() -> list[ResultRuling]:
     curr_card = ""
     curr_count = 0
     oracles = load_oracle()
-    results: list[ResultModel] = list()
+    results: list[ResultRuling] = list()
     for oracle in oracles:
         if oracle.card_id != curr_card:
             curr_card = oracle.card_id
@@ -84,7 +84,7 @@ def load_result() -> list[ResultModel]:
             curr_count = curr_count + 1
 
         codename = f"{curr_card}-{curr_count}"
-        result = ResultModel(
+        result = ResultRuling(
             codename=codename,
             question=oracle.question,
             answer=oracle.answer,
