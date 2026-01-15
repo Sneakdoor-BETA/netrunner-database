@@ -8,19 +8,25 @@ __all__ = [
     "save_settype", "save_cycle", "save_set",
     "save_format", "save_snapshot", "save_pool", "save_restrictions",
     "save_ruling", "save_card", "save_printing",
+
+    "ResultBase", "ResultSide", "ResultFaction", "ResultType", "ResultSubtype",
+    "ResultSettype", "ResultCycle", "ResultSet",
+    "ResultFormat", "ResultSnapshot", "ResultPool", "ResultRestriction",
+    "ResultRuling", "ResultCard", "ResultPrinting"
 ]
 
 
-from .side import save_side
-from .faction import save_faction
-from .type import save_type
-from .subtype import save_subtype
-from .settype import save_settype
-from .cycle import save_cycle
-from .set import save_set
-from .format import save_format, save_snapshot
-from .pool import save_pool
-from .restriction import save_restrictions
-from .ruling import save_ruling
-from .card import save_card
+from .base import ResultBase
+from .side import save_side, ResultSide
+from .faction import save_faction, ResultFaction
+from .type import save_type, ResultType
+from .subtype import save_subtype, ResultSubtype
+from .settype import save_settype, ResultSettype
+from .cycle import save_cycle, ResultCycle
+from .set import save_set, ResultSet
+from .format import save_format, save_snapshot, ResultFormat, ResultSnapshot
+from .pool import save_pool, ResultPool
+from .restriction import save_restrictions, ResultRestriction
+from .ruling import save_ruling, ResultRuling
+from .card import save_card, ResultCard
 from .printing import save_printing, ResultPrinting
